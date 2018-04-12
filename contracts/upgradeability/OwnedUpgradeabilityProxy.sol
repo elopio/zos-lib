@@ -28,8 +28,11 @@ contract OwnedUpgradeabilityProxy is UpgradeabilityProxy {
   * @dev Throws if called by any account other than the owner.
   */
   modifier onlyProxyOwner() {
-    require(msg.sender == proxyOwner());
-    _;
+    if (msg.sender == proxyOwner()) {
+      _;
+    } else {
+      _delegate();
+    }
   }
 
   /**
@@ -41,6 +44,13 @@ contract OwnedUpgradeabilityProxy is UpgradeabilityProxy {
     assembly {
       owner := sload(position)
     }
+  }
+
+  /**
+   * @return the address of the implementation
+   */
+  function implementation() public view returns (address) {
+    return _implementation();
   }
 
   /**
@@ -81,5 +91,13 @@ contract OwnedUpgradeabilityProxy is UpgradeabilityProxy {
   function upgradeToAndCall(address implementation, bytes data) payable public onlyProxyOwner {
     upgradeTo(implementation);
     require(this.call.value(msg.value)(data));
+  }
+
+  /**
+   * @dev Redefines Proxy's fallback to disallow delegation when caller is the proxy owner.
+   */
+  function () public payable {
+    require(msg.sender != proxyOwner());
+    _delegate();
   }
 }

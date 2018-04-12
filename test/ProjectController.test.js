@@ -81,12 +81,12 @@ contract('ProjectController', ([_, controllerOwner, registryOwner, anAddress, an
       })
 
       it('creates a proxy pointing to the requested implementation', async function () {
-        const implementation = await this.proxy.implementation()
+        const implementation = await this.controller.getProxyImplementation(this.proxy.address)
         assert.equal(implementation, implementation_v0)
       })
 
       it('transfers the ownership to the controller', async function () {
-        const proxyOwner = await this.proxy.proxyOwner()
+        const proxyOwner = await this.controller.getProxyOwner(this.proxy.address)
         assert.equal(proxyOwner, this.controller.address)
       })
     })
@@ -117,12 +117,12 @@ contract('ProjectController', ([_, controllerOwner, registryOwner, anAddress, an
       })
 
       it('creates a proxy pointing to the requested implementation', async function () {
-        const implementation = await this.proxy.implementation()
+        const implementation = await this.controller.getProxyImplementation(this.proxy.address)
         assert.equal(implementation, this.behavior.address)
       })
 
       it('transfers the ownership to the controller', async function () {
-        const proxyOwner = await this.proxy.proxyOwner()
+        const proxyOwner = await this.controller.getProxyOwner(this.proxy.address)
         assert.equal(proxyOwner, this.controller.address)
       })
 
@@ -165,7 +165,7 @@ contract('ProjectController', ([_, controllerOwner, registryOwner, anAddress, an
         it('upgrades to the requested implementation', async function () {
           await this.controller.upgradeTo(this.proxyAddress, projectName, version_1, contractName, { from })
 
-          const implementation = await this.proxy.implementation()
+          const implementation = await this.controller.getProxyImplementation(this.proxy.address)
           assert.equal(implementation, implementation_v1)
         })
       })
@@ -211,7 +211,7 @@ contract('ProjectController', ([_, controllerOwner, registryOwner, anAddress, an
         it('upgrades to the requested implementation', async function () {
           await this.controller.upgradeToAndCall(this.proxyAddress, projectName, version_1, contractName, initializeData, { from, value })
 
-          const implementation = await this.proxy.implementation()
+          const implementation = await this.controller.getProxyImplementation(this.proxy.address)
           assert.equal(implementation, this.behavior.address)
         })
 

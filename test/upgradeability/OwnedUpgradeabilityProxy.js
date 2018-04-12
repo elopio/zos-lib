@@ -16,7 +16,7 @@ contract('OwnedUpgradeabilityProxy', ([_, owner, anotherAccount, implementation_
 
   describe('owner', function () {
     it('transfers the ownership to the requested owner', async function () {
-      const proxyOwner = await this.proxy.proxyOwner()
+      const proxyOwner = await this.proxy.proxyOwner({ from: owner })
 
       assert.equal(proxyOwner, owner)
     })
@@ -24,7 +24,7 @@ contract('OwnedUpgradeabilityProxy', ([_, owner, anotherAccount, implementation_
 
   describe('implementation', function () {
     it('returns the current implementation address', async function () {
-      const implementation = await this.proxy.implementation()
+      const implementation = await this.proxy.implementation({ from: owner })
 
       assert.equal(implementation, implementation_v0)
     })
@@ -37,7 +37,7 @@ contract('OwnedUpgradeabilityProxy', ([_, owner, anotherAccount, implementation_
       it('upgrades to the requested implementation', async function () {
         await this.proxy.upgradeTo(implementation_v1, { from })
 
-        const implementation = await this.proxy.implementation()
+        const implementation = await this.proxy.implementation({ from: owner })
         assert.equal(implementation, implementation_v1)
       })
 
@@ -73,7 +73,7 @@ contract('OwnedUpgradeabilityProxy', ([_, owner, anotherAccount, implementation_
       it('upgrades to the requested implementation', async function () {
         await this.proxy.upgradeToAndCall(this.behavior.address, initializeData, { from, value })
 
-        const implementation = await this.proxy.implementation()
+        const implementation = await this.proxy.implementation({ from: owner })
         assert.equal(implementation, this.behavior.address)
       })
 
@@ -120,7 +120,7 @@ contract('OwnedUpgradeabilityProxy', ([_, owner, anotherAccount, implementation_
         it('transfers the ownership', async function () {
           await this.proxy.transferProxyOwnership(newOwner, { from })
 
-          const proxyOwner = await this.proxy.proxyOwner()
+          const proxyOwner = await this.proxy.proxyOwner({ from: owner })
           assert.equal(proxyOwner, anotherAccount)
         })
 

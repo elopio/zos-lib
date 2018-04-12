@@ -25,7 +25,7 @@ contract UpgradeabilityProxy is Proxy {
    * @dev Tells the address of the current implementation
    * @return address of the current implementation
    */
-  function implementation() public view returns (address impl) {
+  function _implementation() internal view returns (address impl) {
     bytes32 position = implementationPosition;
     assembly {
       impl := sload(position)
@@ -36,7 +36,7 @@ contract UpgradeabilityProxy is Proxy {
    * @dev Sets the address of the current implementation
    * @param newImplementation address representing the new implementation to be set
    */
-  function setImplementation(address newImplementation) internal {
+  function _setImplementation(address newImplementation) internal {
     bytes32 position = implementationPosition;
     assembly {
       sstore(position, newImplementation)
@@ -48,9 +48,9 @@ contract UpgradeabilityProxy is Proxy {
    * @param newImplementation representing the address of the new implementation to be set
    */
   function _upgradeTo(address newImplementation) internal {
-    address currentImplementation = implementation();
+    address currentImplementation = _implementation();
     require(currentImplementation != newImplementation);
-    setImplementation(newImplementation);
+    _setImplementation(newImplementation);
     emit Upgraded(newImplementation);
   }
 }
